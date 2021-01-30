@@ -8,7 +8,7 @@ public class RuntimeTexture : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "ImageCore", "Networking", "UMG", "Slate", "SlateCore" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "ImageCore", "Networking", "UMG", "Slate", "SlateCore", "Sockets" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

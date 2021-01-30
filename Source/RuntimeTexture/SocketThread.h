@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Sockets.h"
+#include "IPAddress.h"
 #include "GameFramework/GameModeBase.h"
 
 /**
@@ -11,7 +13,7 @@
 class RUNTIMETEXTURE_API SocketThread : public FRunnable
 {
 public:
-	SocketThread();
+	SocketThread(const FString serverAddr, const uint16_t serverPort);
 	~SocketThread();
 
 	//Interface
@@ -21,6 +23,14 @@ public:
 
 	//functions
 	virtual void AttachActor(AGameModeBase* pointer);
+	virtual void FetchImage(void) { this->isToFetch = true; };
 private:
+	bool isRunning = false;
+	bool forceStop = false;
+	bool isToFetch = false;
+	FString addrString;
+	uint16_t addrPort;
 	AGameModeBase* gm = nullptr;
+	FSocket* socket = nullptr;
+	TSharedPtr<FInternetAddr> addrInfo = nullptr;
 };
