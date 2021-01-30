@@ -16,7 +16,13 @@ ARuntimeTextureGameModeBase::ARuntimeTextureGameModeBase() : Super()
 	ConstructorHelpers::FObjectFinder<UTexture2D> testTexture(TEXT("Texture2D'/Game/k.k'"));
 	if (testTexture.Succeeded()) {
 		UE_LOG(LogTemp, Warning, TEXT("Sample texture found."));
-		DuplicateObject(testTexture.Object, this->curTexture, "Sample Texture");
+		DuplicateObject(testTexture.Object, this->curTexture);
+		if (testTexture.Object == nullptr) {
+			UE_LOG(LogTemp, Warning, TEXT("texture object is null."));
+		}
+		if (this->curTexture == nullptr) {
+			UE_LOG(LogTemp, Warning, TEXT("copy failed."));
+		}
 	}
 }
 
@@ -29,6 +35,10 @@ ARuntimeTextureGameModeBase::~ARuntimeTextureGameModeBase()
 void ARuntimeTextureGameModeBase::BeginPlay(void)
 {
 	UE_LOG(LogTemp, Warning, TEXT("GameMode started."));
+	if (this->curTexture == nullptr) {
+		UE_LOG(LogTemp, Warning, TEXT("Texture is null."));
+		this->curTexture = LoadObject<UTexture2D>(NULL, TEXT("Texture2D'/Game/k.k'"));
+	}
 }
 
 void ARuntimeTextureGameModeBase::SetWidgetTexture(UTexture2D* texture, TArray<uint8_t>* dataSet, uint8_t* rawData)
@@ -42,7 +52,7 @@ void ARuntimeTextureGameModeBase::SetWidgetTexture(UTexture2D* texture, TArray<u
 void ARuntimeTextureGameModeBase::ClearPointers(void)
 {
 	if (this->curTexture != nullptr) {
-		delete this->curTexture;
+		//delete this->curTexture;
 	}
 	if (this->dataStore != nullptr) {
 		this->dataStore->Empty();
@@ -87,8 +97,10 @@ void ARuntimeTextureGameModeBase::UpdateWidgets(void)
 	if (this->callbackQueue == nullptr) {
 		return;
 	}
+	UE_LOG(LogTemp, Warning, TEXT("Setting texture."));
 	for (int x = 0; x < this->callbackQueue->Num(); ++x) {
-		UMyActorComponent* tmp = StaticCast<UMyActorComponent*>(this->callbackQueue[x]);
+		UActorComponent* item = (*this->callbackQueue)[x];
+		UMyActorComponent* tmp = StaticCast<UMyActorComponent*>(item);
 		tmp->SetTexture(this->curTexture);
 	}
 }

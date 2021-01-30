@@ -21,7 +21,7 @@ void ARuntimeTextureActor::BeginPlay()
 	APlayerController* controller = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	UInputComponent* comp = controller->InputComponent;
 	if (comp != nullptr) {
-		comp->BindKey(EKeys::E, EInputEvent::IE_Pressed, this, &ARuntimeTextureActor::SetSampleTexture);
+		comp->BindKey(EKeys::Comma, EInputEvent::IE_Pressed, this, &ARuntimeTextureActor::SetSampleTexture);
 	}
 }
 
@@ -42,8 +42,10 @@ void ARuntimeTextureActor::ClearTexture(void)
 
 void ARuntimeTextureActor::SetSampleTexture(void)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Key pressed."));
 	if (this->gameModePtr != nullptr) {
-		((ARuntimeTextureGameModeBase*)this->gameModePtr);
+		UE_LOG(LogTemp, Warning, TEXT("valid."));
+		((ARuntimeTextureGameModeBase*)this->gameModePtr)->UpdateWidgets();
 	}
 }
 

@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "Engine/Texture2D.h"
 #include "Components/Image.h"
+#include "Components/WidgetComponent.h"
 #include "MyActorComponent.generated.h"
 
 
@@ -34,5 +35,6 @@ private:
 	AGameModeBase* gameModePtr = nullptr;
 	UImage* WidgetImage = nullptr;
 	FSlateBrush defaultBrush;
+	UWidgetComponent* widComp = nullptr;
 	void FindTarget(void);
 };

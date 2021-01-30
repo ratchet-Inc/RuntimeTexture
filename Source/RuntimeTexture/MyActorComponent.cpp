@@ -2,7 +2,6 @@
 
 
 #include "MyActorComponent.h"
-#include "Components/WidgetComponent.h"
 #include "Components/InputComponent.h"
 #include "Blueprint/WidgetTree.h"
 #include "Kismet/GameplayStatics.h"
@@ -53,7 +52,14 @@ void UMyActorComponent::SetTexture(UTexture2D* texture)
 	if (this->WidgetImage == nullptr) {
 		return;
 	}
+	UE_LOG(LogTemp, Warning, TEXT("texture set."));
+	if (texture == nullptr) {
+		UE_LOG(LogTemp, Warning, TEXT("texture is null."));
+	}
 	this->WidgetImage->SetBrushFromTexture(texture, false);
+	//this->widComp->UpdateWidget();
+	this->widComp->RequestRedraw();
+	this->widComp->SetRedrawTime(1.0f);
 }
 
 void UMyActorComponent::ClearTexture(void)
@@ -67,13 +73,17 @@ void UMyActorComponent::FindTarget()
 	this->GetOwner()->GetComponents<UWidgetComponent>(arr);
 	if (arr.Num() > 0) {
 		UWidgetComponent* widg = arr[0];
+		this->widComp = widg;
 		if (widg->GetUserWidgetObject() == nullptr) {
 			UE_LOG(LogTemp, Warning, TEXT("Widget pointer is null."));
 			return;
 		}
 		UWidgetTree* tree = widg->GetUserWidgetObject()->WidgetTree;
 		this->WidgetImage = tree->FindWidget<UImage>(FName(this->targetWidgetName));
-		this->defaultBrush = this->WidgetImage->Brush;
+		if (this->WidgetImage != nullptr) {
+			UE_LOG(LogTemp, Warning, TEXT("Widget target found."));
+			this->defaultBrush = this->WidgetImage->Brush;
+		}
 	}
 }
 
