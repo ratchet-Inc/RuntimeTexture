@@ -39,6 +39,7 @@ void ARuntimeTextureGameModeBase::BeginPlay(void)
 		UE_LOG(LogTemp, Warning, TEXT("Texture is null."));
 		this->curTexture = LoadObject<UTexture2D>(NULL, TEXT("Texture2D'/Game/k.k'"));
 	}
+	this->CreateSocketThread();
 }
 
 void ARuntimeTextureGameModeBase::SetWidgetTexture(UTexture2D* texture, TArray<uint8_t>* dataSet, uint8_t* rawData)
@@ -102,6 +103,30 @@ void ARuntimeTextureGameModeBase::UpdateWidgets(void)
 		UActorComponent* item = (*this->callbackQueue)[x];
 		UMyActorComponent* tmp = StaticCast<UMyActorComponent*>(item);
 		tmp->SetTexture(this->curTexture);
+	}
+}
+
+void ARuntimeTextureGameModeBase::CreateSocketThread(void)
+{
+	FString s("Image stream thread.");
+	FString ip = this->ipAddrString;
+	int portNum = this->ipAddrPort;
+	// setting defaults to be safe.
+	if (ip.Len() == 0) {
+		ip = ARuntimeTextureGameModeBase::DEFAULT_ADDR();
+	}
+	if (this->ipAddrPort == 0) {
+		portNum = ARuntimeTextureGameModeBase::DEFAULT_PORT;
+	}
+	this->socketObject = new(std::nothrow) SocketThread();
+	if (this->socketObject == nullptr) {
+		UE_LOG(LogTemp, Error, TEXT("Failed to allocate socket thread class."));
+		return;
+	}
+	this->socketThread = FRunnableThread::Create(this->socketObject, *s);
+	if (this->socketThread == nullptr) {
+		UE_LOG(LogTemp, Error, TEXT("Failed to create socket thread."));
+		return;
 	}
 }
 

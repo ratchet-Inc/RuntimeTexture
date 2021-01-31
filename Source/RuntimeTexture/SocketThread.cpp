@@ -7,6 +7,12 @@
 #include <String>
 #include <new>
 
+SocketThread::SocketThread()
+{
+    this->addrString = "";
+    this->addrPort = 0;
+}
+
 SocketThread::SocketThread(const FString serverAddr, const uint16_t portnum)
 {
     this->addrString = serverAddr;
@@ -125,4 +131,10 @@ void SocketThread::Stop(void)
 void SocketThread::AttachActor(AGameModeBase* pointer)
 {
     this->gm = pointer;
+}
+
+void SocketThread::SetThreadInfo(const FString serverAddr, const uint16_t serverPort)
+{
+    this->addrString = serverAddr;
+    this->addrPort = serverPort;
 }

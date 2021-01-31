@@ -13,6 +13,7 @@
 class RUNTIMETEXTURE_API SocketThread : public FRunnable
 {
 public:
+	SocketThread(void);
 	SocketThread(const FString serverAddr, const uint16_t serverPort);
 	~SocketThread();
 
@@ -24,6 +25,7 @@ public:
 	//functions
 	virtual void AttachActor(AGameModeBase* pointer);
 	virtual void FetchImage(void) { this->isToFetch = true; };
+	virtual void SetThreadInfo(const FString serverAddr, const uint16_t serverPort);
 private:
 	bool isRunning = false;
 	bool forceStop = false;
