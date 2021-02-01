@@ -128,6 +128,7 @@ uint32 SocketThread::Run(void)
 
 void SocketThread::Stop(void)
 {
+    this->isRunning = false;
     if (this->socket != nullptr) {
         this->socket->Close();
         this->socket->Shutdown(ESocketShutdownMode::ReadWrite);
