@@ -28,6 +28,13 @@ ARuntimeTextureGameModeBase::ARuntimeTextureGameModeBase() : Super()
 
 ARuntimeTextureGameModeBase::~ARuntimeTextureGameModeBase()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Destroying gamemode."));
+	if (this->socketThread != nullptr) {
+		this->socketObject->Stop();
+		this->socketThread->WaitForCompletion();
+		delete this->socketThread;
+		delete this->socketObject;
+	}
 	ClearPointers();
 	//Super();
 }
@@ -35,11 +42,15 @@ ARuntimeTextureGameModeBase::~ARuntimeTextureGameModeBase()
 void ARuntimeTextureGameModeBase::BeginPlay(void)
 {
 	UE_LOG(LogTemp, Warning, TEXT("GameMode started."));
-	if (this->curTexture == nullptr) {
+	// force the loading of sample texture for debugging.
+	// currently disabled, set to true to enable
+	if (!true) {
 		UE_LOG(LogTemp, Warning, TEXT("Texture is null."));
 		this->curTexture = LoadObject<UTexture2D>(NULL, TEXT("Texture2D'/Game/k.k'"));
+		return;
 	}
 	this->CreateSocketThread();
+	UE_LOG(LogTemp, Warning, TEXT("created the socket."));
 }
 
 void ARuntimeTextureGameModeBase::SetWidgetTexture(UTexture2D* texture, TArray<uint8_t>* dataSet, uint8_t* rawData)
@@ -118,7 +129,7 @@ void ARuntimeTextureGameModeBase::CreateSocketThread(void)
 	if (this->ipAddrPort == 0) {
 		portNum = ARuntimeTextureGameModeBase::DEFAULT_PORT;
 	}
-	this->socketObject = new(std::nothrow) SocketThread();
+	this->socketObject = new(std::nothrow) SocketThread(ip, portNum);
 	if (this->socketObject == nullptr) {
 		UE_LOG(LogTemp, Error, TEXT("Failed to allocate socket thread class."));
 		return;

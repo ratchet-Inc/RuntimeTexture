@@ -27,10 +27,12 @@ SocketThread::~SocketThread()
     if(this->addrInfo != nullptr) {
         this->addrInfo.Reset();
     }
+    UE_LOG(LogTemp, Warning, TEXT("socket destroyed."));
 }
 
-bool SocketThread::init(void)
+bool SocketThread::Init(void)
 {
+    UE_LOG(LogTemp, Warning, TEXT("socket initializing..."));
     // I still cannot find the definition of: PLATFORM_SOCKETSUBSYSTEM
     ISocketSubsystem* subsys = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM);
     this->addrInfo = subsys->CreateInternetAddr();
@@ -41,6 +43,7 @@ bool SocketThread::init(void)
     bool res = true;
     this->addrInfo->SetIp(*this->addrString, res);
     if (!res) {
+        UE_LOG(LogTemp, Warning, TEXT("IP address is invalid: '%s'."), *this->addrString);
         return false;
     }
     this->addrInfo->SetPort(this->addrPort);
@@ -50,6 +53,7 @@ bool SocketThread::init(void)
     }
     UE_LOG(LogTemp, Warning, TEXT("Connected to the PNG Stream server."));
     this->isRunning = true;
+    UE_LOG(LogTemp, Warning, TEXT("socket ready."));
 
     return true;
 }
@@ -117,6 +121,8 @@ uint32 SocketThread::Run(void)
         }
         ((ARuntimeTextureGameModeBase*)this->gm)->ParseRawImageData(fileBuffer, bytesToAllocate);
     }
+    UE_LOG(LogTemp, Warning, TEXT("socket loop ending."));
+
     return 0;
 }
 

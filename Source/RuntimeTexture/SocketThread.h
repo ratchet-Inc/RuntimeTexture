@@ -18,7 +18,7 @@ public:
 	~SocketThread();
 
 	//Interface
-	virtual bool init(void);
+	virtual bool Init(void);
 	virtual uint32 Run(void);
 	virtual void Stop(void);
 
