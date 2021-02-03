@@ -22,6 +22,7 @@ void ARuntimeTextureActor::BeginPlay()
 	UInputComponent* comp = controller->InputComponent;
 	if (comp != nullptr) {
 		comp->BindKey(EKeys::Comma, EInputEvent::IE_Pressed, this, &ARuntimeTextureActor::SetSampleTexture);
+		comp->BindKey(EKeys::X, EInputEvent::IE_Released, this, &ARuntimeTextureActor::FetchSampleTexture);
 	}
 }
 
@@ -46,6 +47,15 @@ void ARuntimeTextureActor::SetSampleTexture(void)
 	if (this->gameModePtr != nullptr) {
 		UE_LOG(LogTemp, Warning, TEXT("valid."));
 		((ARuntimeTextureGameModeBase*)this->gameModePtr)->UpdateWidgets();
+	}
+}
+
+void ARuntimeTextureActor::FetchSampleTexture(void)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Fetching triggered."));
+	if (this->gameModePtr != nullptr) {
+		UE_LOG(LogTemp, Warning, TEXT("valid."));
+		((ARuntimeTextureGameModeBase*)this->gameModePtr)->FetchTexture();
 	}
 }
 

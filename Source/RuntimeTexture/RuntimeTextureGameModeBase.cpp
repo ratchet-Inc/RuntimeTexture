@@ -47,6 +47,7 @@ void ARuntimeTextureGameModeBase::BeginPlay(void)
 	if (!true) {
 		UE_LOG(LogTemp, Warning, TEXT("Texture is null."));
 		this->curTexture = LoadObject<UTexture2D>(NULL, TEXT("Texture2D'/Game/k.k'"));
+		this->isSampleTexture = true;
 		return;
 	}
 	this->CreateSocketThread();
@@ -63,8 +64,8 @@ void ARuntimeTextureGameModeBase::SetWidgetTexture(UTexture2D* texture, TArray<u
 
 void ARuntimeTextureGameModeBase::ClearPointers(void)
 {
-	if (this->curTexture != nullptr) {
-		//delete this->curTexture;
+	if (this->curTexture != nullptr && this->isSampleTexture == false) {
+		delete this->curTexture;
 	}
 	if (this->dataStore != nullptr) {
 		this->dataStore->Empty();
@@ -91,6 +92,7 @@ int ARuntimeTextureGameModeBase::ParseRawImageData(uint8_t* data, const UINT dat
 	this->mutex.Lock();
 	this->SetWidgetTexture(texture, dataSet, data);
 	this->mutex.Unlock();
+	UE_LOG(LogTemp, Warning, TEXT("texture parsed."));
 
 	return 0;
 }
@@ -138,6 +140,14 @@ void ARuntimeTextureGameModeBase::CreateSocketThread(void)
 	if (this->socketThread == nullptr) {
 		UE_LOG(LogTemp, Error, TEXT("Failed to create socket thread."));
 		return;
+	}
+	this->socketObject->AttachActor(this);
+}
+
+void ARuntimeTextureGameModeBase::FetchTexture(void)
+{
+	if (this->socketObject != nullptr) {
+		this->socketObject->ToggleFetch();
 	}
 }
 

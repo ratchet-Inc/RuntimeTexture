@@ -6,17 +6,20 @@
 #include "RuntimeTextureGameModeBase.h" 
 #include <String>
 #include <new>
+#include <fstream>
 
 SocketThread::SocketThread()
 {
     this->addrString = "";
     this->addrPort = 0;
+    this->gm = nullptr;
 }
 
 SocketThread::SocketThread(const FString serverAddr, const uint16_t portnum)
 {
     this->addrString = serverAddr;
     this->addrPort = portnum;
+    this->gm = nullptr;
 }
 
 SocketThread::~SocketThread()
@@ -79,6 +82,11 @@ uint32 SocketThread::Run(void)
             continue;
         }
         UE_LOG(LogTemp, Warning, L"Fetching PNG data...");
+        int len = 0;
+        uint8_t* buf = this->LoadTestImg(len);
+        this->isToFetch = false;
+        ((ARuntimeTextureGameModeBase*)this->gm)->ParseRawImageData(buf, len);
+        //continue;
         int sent = 0;
         bool res = true;
         res = this->socket->Send((uint8_t*)fetchInfoMsg, sizeof(fetchInfoMsg), sent);
@@ -89,7 +97,17 @@ uint32 SocketThread::Run(void)
         if (!res) {
             return 1;
         }
+        std::string s(buffer);
+        std::wstring wide_s;
+        wide_s.assign(s.begin(), s.end());
+        FString fs(wide_s.c_str());
+        UE_LOG(LogTemp, Warning, L"bytes received: %s.", *fs);
         int bytesToAllocate = std::stoi(std::string(buffer));
+        if (bytesToAllocate == 0) {
+            this->isToFetch = false;
+            UE_LOG(LogTemp, Warning, L"No file is available for streaming.");
+            continue;
+        }
         //checking if file size is less than 1MB
         if (bytesToAllocate >= 1024 * 1024) {
             res = this->socket->Send((uint8_t*)denyDataMsg, sizeof(denyDataMsg), sent);
@@ -116,8 +134,10 @@ uint32 SocketThread::Run(void)
         if (!res) {
             return 1;
         }
+        this->isToFetch = false;
         if (this->gm == nullptr) {
             delete[] fileBuffer;
+            continue;
         }
         ((ARuntimeTextureGameModeBase*)this->gm)->ParseRawImageData(fileBuffer, bytesToAllocate);
     }
@@ -144,4 +164,26 @@ void SocketThread::SetThreadInfo(const FString serverAddr, const uint16_t server
 {
     this->addrString = serverAddr;
     this->addrPort = serverPort;
+}
+
+uint8* SocketThread::LoadTestImg(int& bufLen)
+{
+    std::ifstream f("F:/php_uploads/k60183f1b47c25.png", std::ios::binary);
+    if (!f.is_open()) {
+        return nullptr;
+    }
+    //get length of file
+    f.seekg(0, std::ios::end);
+    size_t length = f.tellg();
+    f.seekg(0, std::ios::beg);
+    uint8_t* buffer = new(std::nothrow) uint8_t[length];
+    if (buffer == nullptr) {
+        return nullptr;
+    }
+    //read file
+    f.read((char*)buffer, length);
+    f.close();
+    bufLen = length;
+
+    return buffer;
 }

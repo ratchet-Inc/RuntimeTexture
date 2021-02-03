@@ -26,6 +26,7 @@ public:
 	virtual void AttachActor(AGameModeBase* pointer);
 	virtual void FetchImage(void) { this->isToFetch = true; };
 	virtual void SetThreadInfo(const FString serverAddr, const uint16_t serverPort);
+	virtual void ToggleFetch(void) { this->isToFetch = true; };
 private:
 	bool isRunning = false;
 	bool forceStop = false;
@@ -35,4 +36,5 @@ private:
 	AGameModeBase* gm = nullptr;
 	FSocket* socket = nullptr;
 	TSharedPtr<FInternetAddr> addrInfo = nullptr;
+	virtual uint8_t* LoadTestImg(int &bufLen);
 };

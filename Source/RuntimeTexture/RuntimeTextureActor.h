@@ -22,6 +22,7 @@ public:
 	virtual void SetTexture(UTexture2D* texture);
 	virtual void ClearTexture(void);
 	virtual void SetSampleTexture(void);
+	virtual void FetchSampleTexture(void);
 
 protected:
 	// Called when the game starts or when spawned

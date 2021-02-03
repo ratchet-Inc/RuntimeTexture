@@ -24,6 +24,7 @@ public:
 	virtual int ParseRawImageData(uint8_t* data , const UINT dataLength);
 	virtual bool AttachToTextureUpdate(UActorComponent* actorRef);
 	virtual void UpdateWidgets(void);
+	virtual void FetchTexture(void);
 protected:
 	static const FString DEFAULT_ADDR(void) { return FString("127.0.0.1");  };
 	static const UINT16 DEFAULT_PORT = 8089;
@@ -34,6 +35,7 @@ private:
 		FString ipAddrString;
 	UPROPERTY(Config)
 		int ipAddrPort = 0;
+	bool isSampleTexture = false;
 	FCriticalSection mutex;
 	uint8_t* rawDataStore = nullptr;
 	TArray<uint8_t>* dataStore = nullptr;
